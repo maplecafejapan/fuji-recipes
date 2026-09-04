@@ -274,13 +274,13 @@
 
 <script>
 const FILM = [
-  ["PROVIA／標準", 0x01],["Velvia／鮮豔", 0x02],["ASTIA／柔和", 0x03],
-  ["PRO負片 高對比", 0x04],["PRO負片 標準", 0x05],
-  ["黑白", 0x06],["黑白＋黃", 0x07],["黑白＋紅", 0x08],["黑白＋綠", 0x09],
-  ["棕褐", 0x0A],["經典正片", 0x0B],
-  ["ACROS", 0x0C],["ACROS＋黃", 0x0D],["ACROS＋紅", 0x0E],["ACROS＋綠", 0x0F],
-  ["ETERNA／電影", 0x10],["經典負片", 0x11],["ETERNA漂白效果", 0x12],
-  ["懷舊負片", 0x13],["REALA ACE", 0x14]
+  ["PROVIA / Standard", 0x01],["Velvia / Vivid", 0x02],["ASTIA / Soft", 0x03],
+  ["PRO Neg. Hi", 0x04],["PRO Neg. Std", 0x05],
+  ["Monochrome", 0x06],["Monochrome+Ye", 0x07],["Monochrome+R", 0x08],["Monochrome+G", 0x09],
+  ["Sepia", 0x0A],["Classic Chrome", 0x0B],
+  ["ACROS", 0x0C],["ACROS+Ye", 0x0D],["ACROS+R", 0x0E],["ACROS+G", 0x0F],
+  ["ETERNA / Cinema", 0x10],["Classic Neg.", 0x11],["ETERNA Bleach Bypass", 0x12],
+  ["Nostalgic Neg.", 0x13],["REALA ACE", 0x14]
 ];
 const WB = [
   ["自動", 0x0002],["自動（氣氛優先）", 0x8021],["晴天", 0x0004],
@@ -294,7 +294,7 @@ const FX = [["關",1],["弱",2],["強",3]];
 const TONE = ["-2","-1.5","-1","-0.5","0","+0.5","+1","+1.5","+2","+2.5","+3","+3.5","+4"];
 const PM4 = ["-4","-3","-2","-1","0","+1","+2","+3","+4"];
 const CLA = ["-5","-4","-3","-2","-1","0","+1","+2","+3","+4","+5"];
-const MONO = new Set(["黑白","黑白＋黃","黑白＋紅","黑白＋綠","棕褐","ACROS","ACROS＋黃","ACROS＋紅","ACROS＋綠"]);
+const MONO = new Set(["Monochrome","Monochrome+Ye","Monochrome+Y","Monochrome+R","Monochrome+G","Sepia","ACROS","ACROS+Ye","ACROS+Y","ACROS+R","ACROS+G"]);
 const FUJI_VID = 0x04CB;
 const LEGACY = {
   "PROVIA / Standard":"PROVIA／標準","Velvia / Vivid":"Velvia／鮮豔","ASTIA / Soft":"ASTIA／柔和",
@@ -317,13 +317,13 @@ const state = { recipes: [], view: "list", current: null, draftPhotos: [], cam: 
 const toast = (m) => { const t=$("#toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1800); };
 const shutter = () => { const s=$("#shutter"); if(!s) return; s.classList.remove("go"); void s.offsetWidth; s.classList.add("go"); };
 const SIM_COLOR = {
-  "PROVIA／標準":"#c45c4a","Velvia／鮮豔":"#d21e2b","ASTIA／柔和":"#d9a07a",
-  "經典正片":"#b85a3a","經典負片":"#8a5a3c","懷舊負片":"#6e4a38",
-  "ETERNA／電影":"#5a6a6e","ETERNA漂白效果":"#7a7a7a","REALA ACE":"#c48a5a",
-  "PRO負片 高對比":"#c07060","PRO負片 標準":"#c9a090","ACROS":"#3a3a3a",
-  "ACROS＋黃":"#6a5a30","ACROS＋紅":"#5a3030","ACROS＋綠":"#30503a",
-  "黑白":"#444","黑白＋黃":"#6a5a30","黑白＋紅":"#5a3030",
-  "黑白＋綠":"#30503a","棕褐":"#8a6a40"
+  "PROVIA / Standard":"#c45c4a","Velvia / Vivid":"#d21e2b","ASTIA / Soft":"#d9a07a",
+  "Classic Chrome":"#b85a3a","Classic Neg.":"#8a5a3c","Nostalgic Neg.":"#6e4a38",
+  "ETERNA / Cinema":"#5a6a6e","ETERNA Bleach Bypass":"#7a7a7a","REALA ACE":"#c48a5a",
+  "PRO Neg. Hi":"#c07060","PRO Neg. Std":"#c9a090","ACROS":"#3a3a3a",
+  "ACROS+Ye":"#6a5a30","ACROS+R":"#5a3030","ACROS+G":"#30503a",
+  "Monochrome":"#444","Monochrome+Ye":"#6a5a30","Monochrome+R":"#5a3030",
+  "Monochrome+G":"#30503a","Sepia":"#8a6a40"
 };
 function tonePct(v){
   const n = parseFloat(String(v).replace("+",""));
@@ -333,14 +333,25 @@ function tonePct(v){
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc = (s) => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 
+const FILM_EN = {
+  "PROVIA／標準":"PROVIA / Standard","Velvia／鮮豔":"Velvia / Vivid","ASTIA／柔和":"ASTIA / Soft",
+  "PRO負片 高對比":"PRO Neg. Hi","PRO負片 標準":"PRO Neg. Std",
+  "黑白":"Monochrome","黑白＋黃":"Monochrome+Ye","黑白＋紅":"Monochrome+R","黑白＋綠":"Monochrome+G",
+  "棕褐":"Sepia","經典正片":"Classic Chrome",
+  "ACROS＋黃":"ACROS+Ye","ACROS＋紅":"ACROS+R","ACROS＋綠":"ACROS+G",
+  "ETERNA／電影":"ETERNA / Cinema","經典負片":"Classic Neg.","ETERNA漂白效果":"ETERNA Bleach Bypass",
+  "懷舊負片":"Nostalgic Neg.","Reala Ace":"REALA ACE","REALA ACE":"REALA ACE",
+  "Monochrome+Y":"Monochrome+Ye","ACROS+Y":"ACROS+Ye","ETERNA":"ETERNA / Cinema"
+};
 function migrateRecipe(r){
   if(!r) return r;
-  ["filmSim","dr","grain","colorChrome","colorChromeBlue","wb"].forEach(k=>{ if(r[k]) r[k]=zh(r[k]); });
+  if(r.filmSim) r.filmSim = FILM_EN[r.filmSim] || r.filmSim;
+  ["dr","grain","colorChrome","colorChromeBlue","wb"].forEach(k=>{ if(r[k]) r[k]=zh(r[k]); });
   return r;
 }
 function emptyRecipe(){
   return {
-    id: uid(), name: "", filmSim: "經典正片", dr: "DR400",
+    id: uid(), name: "", filmSim: "Classic Chrome", dr: "DR400",
     grain: "弱／小", colorChrome: "關", colorChromeBlue: "關",
     wb: "自動", kelvin: "5500", shiftR: "0", shiftB: "0",
     highlight: "0", shadow: "0", color: "0", sharpness: "0", nr: "-4", clarity: "0",
@@ -357,7 +368,7 @@ function load(){
       ...emptyRecipe(), id: "demo-gold", name: "Kodak Gold 200 範例",
       grain: "強／小", colorChrome: "弱", shiftR: "+4", shiftB: "-5",
       highlight: "-1.5", shadow: "+0.5", color: "+3", sharpness: "-2", clarity: "-2",
-      notes: "示範用，可刪。經典正片 + 暖色偏移。"
+      notes: "示範用，可刪。Classic Chrome + 暖色偏移。"
     }];
     save();
   }
